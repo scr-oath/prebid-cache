@@ -12,6 +12,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	CredentialsProvider func() (username string, password string)
+)
+
 // RedisDB is an interface that helps us communicate with an instance of a
 // Redis database. Its implementation is intended to use the "github.com/go-redis/redis"
 // client
@@ -50,9 +54,10 @@ func NewRedisBackend(cfg config.Redis, ctx context.Context) *RedisBackend {
 	constr := cfg.Host + ":" + strconv.Itoa(cfg.Port)
 
 	options := &redis.Options{
-		Addr:     constr,
-		Password: cfg.Password,
-		DB:       cfg.Db,
+		Addr:                constr,
+		Password:            cfg.Password,
+		DB:                  cfg.Db,
+		CredentialsProvider: CredentialsProvider,
 	}
 
 	if cfg.TLS.Enabled {
